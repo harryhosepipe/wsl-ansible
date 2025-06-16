@@ -1,0 +1,41 @@
+---
+- name: Get latest Neovim release info
+  uri:
+    url: https://api.github.com/repos/neovim/neovim/releases/latest
+    return_content: yes
+  register: nvim_release
+
+- name: Download latest Neovim AppImage
+  get_url:
+    url: "{{ nvim_release.json.assets | selectattr('name', 'match', '.*nvim.appimage$') | map(attribute='browser_download_url') | first }}"
+    dest: /usr/local/bin/nvim
+    mode: '0755'
+
+- name: Create nvim symlink
+  file:
+    src: /usr/local/bin/nvim
+    dest: /usr/bin/nvim
+    state: link
+
+- name: Install Node Version Manager (fnm)
+  shell: |
+    curl -fsSL https://fnm.vercel.app/install | bash
+  become_user: "{{ user_name }}"
+  args:
+    creates: "{{ user_home }}/.local/share/fnm"
+
+- name: Install latest Node.js LTS
+  shell: |
+    export PATH="{{ user_home }}/.local/share/fnm:$PATH"
+    eval "$(fnm env)"
+    fnm install --lts
+    fnm use lts-latest
+    fnm default lts-latest
+  become_user: "{{ user_name }}"
+  args:
+    executable: /bin/bash
+
+- name: Change default shell to Fish
+  user:
+    name: "{{ user_name }}"
+    shell: /usr/bin/fish

@@ -1,0 +1,22 @@
+---
+# User configuration
+user_name: pablo
+user_home: "/home/{{ user_name }}"
+dotfiles_repo: "https://github.com/your-username/dotfiles.git"  # Update this
+dotfiles_path: "{{ user_home }}/dev/dotfiles"
+
+# Development directories
+dev_dirs:
+  - "{{ user_home }}/dev/dotfiles"
+  - "{{ user_home }}/dev/projects" 
+  - "{{ user_home }}/dev/sandbox"
+  - "{{ user_home }}/.config"
+  - "{{ user_home }}/.local/share"
+  - "{{ user_home }}/.cache"
+
+# Stow packages to manage
+stow_packages:
+  - fish
+  - git
+  - nvim
+  - tmux

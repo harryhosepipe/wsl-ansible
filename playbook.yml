@@ -1,0 +1,11 @@
+---
+- name: WSL Ubuntu Development Environment Setup
+  hosts: localhost
+  become: yes
+  vars:
+    ansible_become_password: "{{ ansible_password | default(omit) }}"
+  
+  roles:
+    - base
+    - development
+    - dotfiles
