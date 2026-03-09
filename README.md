@@ -15,6 +15,7 @@ The top-level [playbook.yml](/home/pablo/bin/wsl-ansible/playbook.yml) stays thi
 - Creates a few development directories in your home directory
 - Configures Git identity and GitHub SSH from Doppler-provided secrets
 - Installs `zsh`, makes it the login shell, and keeps shell config under `~/.config/zsh`
+- Starts `ssh-agent` on login shells and reloads the GitHub key when needed
 - Installs Neovim and the LazyVim starter config
 - Installs Node.js with `nvm` under XDG data
 
@@ -117,10 +118,13 @@ The repository now establishes XDG conventions before the rest of the bootstrap 
 - Keeps the required `~/.zshenv` file minimal and uses it only to export XDG variables and `ZDOTDIR`
 - Stores the main shell config in `~/.config/zsh/.zshrc`
 - Uses `~/.config/zsh/.zprofile` to continue loading `~/.profile` on login shells
+- Uses `~/.config/zsh/.zprofile` to restore or start `ssh-agent` and add `~/.ssh/github_ed25519`
 - Stores zsh history in `~/.local/state/zsh/history`
 - Stores zsh completion cache in `~/.cache/zsh`
 - Stores `nvm` in `~/.local/share/nvm`
 - Stores npm config in `~/.config/npm/npmrc` and npm cache in `~/.cache/npm`
+
+If the GitHub SSH key is passphrase-protected, login shells will prompt once when the key needs to be added to the agent.
 
 This is about as XDG-compliant as `zsh` gets without hacks: `~/.zshenv` must still exist in `$HOME` so zsh can discover `ZDOTDIR`.
 

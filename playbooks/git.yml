@@ -5,9 +5,6 @@
   gather_facts: true
 
   vars:
-    ssh_dir: "{{ bootstrap_home }}/.ssh"
-    github_private_key_path: "{{ ssh_dir }}/github_ed25519"
-    github_public_key_path: "{{ ssh_dir }}/github_ed25519.pub"
     git_user_name: "{{ lookup('ansible.builtin.env', 'GIT_USER_NAME') }}"
     git_user_email: "{{ lookup('ansible.builtin.env', 'GIT_USER_EMAIL') }}"
     github_ssh_private_key: "{{ lookup('ansible.builtin.env', 'SSH_PRIVATE_KEY') }}"
