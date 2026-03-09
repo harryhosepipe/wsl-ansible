@@ -5,10 +5,10 @@ set -euo pipefail
 REPO_HTTPS_URL="https://github.com/harryhosepipe/wsl-ansible.git"
 PULL_DIR="${HOME}/.local/share/ansible-pull/wsl-ansible"
 REQUIRED_BOOTSTRAP_VARS=(
-  BOOTSTRAP_GIT_USER_NAME
-  BOOTSTRAP_GIT_USER_EMAIL
-  BOOTSTRAP_GITHUB_SSH_PRIVATE_KEY
-  BOOTSTRAP_GITHUB_SSH_PUBLIC_KEY
+  GIT_USER_NAME
+  GIT_USER_EMAIL
+  SSH_PRIVATE_KEY
+  SSH_PUBLIC_KEY
 )
 
 if ! command -v apt-get >/dev/null 2>&1; then

@@ -13,10 +13,10 @@ if ! command -v git >/dev/null 2>&1 || ! command -v ansible-pull >/dev/null 2>&1
 fi
 
 for var_name in \
-  BOOTSTRAP_GIT_USER_NAME \
-  BOOTSTRAP_GIT_USER_EMAIL \
-  BOOTSTRAP_GITHUB_SSH_PRIVATE_KEY \
-  BOOTSTRAP_GITHUB_SSH_PUBLIC_KEY; do
+  GIT_USER_NAME \
+  GIT_USER_EMAIL \
+  SSH_PRIVATE_KEY \
+  SSH_PUBLIC_KEY; do
   if [ -z "${!var_name:-}" ]; then
     echo "Missing required environment variable: ${var_name}" >&2
     echo "Run this bootstrap under doppler run so Git credentials and SSH keys are injected." >&2

@@ -21,7 +21,7 @@ The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stay
 One-command install after Doppler authentication:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p YOUR_PROJECT -c YOUR_CONFIG -- bash
+curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p base -c dev -- bash
 ```
 
 Fresh WSL flow:
@@ -29,7 +29,7 @@ Fresh WSL flow:
 ```bash
 curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
 doppler login
-curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p YOUR_PROJECT -c YOUR_CONFIG -- bash
+curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p base -c dev -- bash
 ```
 
 That installer will:
@@ -79,10 +79,10 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 
 Expected Doppler secrets:
 
-- `BOOTSTRAP_GIT_USER_NAME`
-- `BOOTSTRAP_GIT_USER_EMAIL`
-- `BOOTSTRAP_GITHUB_SSH_PRIVATE_KEY`
-- `BOOTSTRAP_GITHUB_SSH_PUBLIC_KEY`
+- `GIT_USER_NAME`
+- `GIT_USER_EMAIL`
+- `SSH_PRIVATE_KEY`
+- `SSH_PUBLIC_KEY`
 
 ## Neovim
 
