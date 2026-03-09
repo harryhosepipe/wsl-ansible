@@ -29,6 +29,10 @@
       ansible.builtin.set_fact:
         neovim_version: "{{ neovim_release.json.tag_name }}"
         neovim_archive_name: "nvim-linux-{{ neovim_arch }}.tar.gz"
+        neovim_archive_path: "/tmp/nvim-linux-{{ neovim_arch }}.tar.gz"
+
+    - name: Set Neovim download URL
+      ansible.builtin.set_fact:
         neovim_download_url: >-
           {{
             neovim_release.json.assets
@@ -36,7 +40,6 @@
             | map(attribute='browser_download_url')
             | first
           }}
-        neovim_archive_path: "/tmp/{{ neovim_archive_name }}"
 
     - name: Download Neovim archive
       become: true
