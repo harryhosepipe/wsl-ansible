@@ -3,6 +3,8 @@
   hosts: localhost
   connection: local
   gather_facts: true
+  vars_files:
+    - ../group_vars/all.yml
 
   vars:
     git_user_name: "{{ lookup('ansible.builtin.env', 'GIT_USER_NAME') }}"
