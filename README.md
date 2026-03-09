@@ -18,25 +18,31 @@ The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stay
 
 ## Fresh WSL usage
 
-One-command install after Doppler authentication:
+This bootstrap expects Doppler project `base` and config `dev`.
 
-```bash
-curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p base -c dev -- bash
-```
-
-Fresh WSL flow:
+### 1. Install Doppler CLI
 
 ```bash
 curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
+```
+
+### 2. Authenticate Doppler
+
+```bash
 doppler login
+```
+
+### 3. Run the bootstrap
+
+```bash
 curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p base -c dev -- bash
 ```
 
-That installer will:
+### What the bootstrap does
 
-- install `git` and Ansible if needed
-- pull this repository into `~/.local/share/ansible-pull/wsl-ansible`
-- run `playbook.yml` locally with `ansible-pull`
+- installs `git` and Ansible if needed
+- pulls this repository into `~/.local/share/ansible-pull/wsl-ansible`
+- runs `playbook.yml` locally with `ansible-pull`
 
 Manual install:
 
