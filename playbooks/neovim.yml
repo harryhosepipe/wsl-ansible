@@ -5,12 +5,11 @@
   gather_facts: true
 
   vars:
-    bootstrap_home: "{{ ansible_env.HOME }}"
     neovim_arch_map:
       x86_64: x86_64
       aarch64: arm64
     neovim_arch: "{{ neovim_arch_map[ansible_architecture] | default(ansible_architecture) }}"
-    lazyvim_config_dir: "{{ bootstrap_home }}/.config/nvim"
+    lazyvim_config_dir: "{{ xdg_config_home }}/nvim"
 
   tasks:
     - name: Get latest Neovim release metadata

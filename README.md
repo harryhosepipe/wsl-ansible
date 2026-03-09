@@ -4,17 +4,19 @@ Small Ansible baseline for a fresh WSL Ubuntu install.
 
 The repository is intentionally minimal. It should succeed on a new WSL instance without requiring you to edit usernames, dotfiles URLs, or role variables first.
 
-The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/base.yml](/home/pablo/projects/wsl-ansible/playbooks/base.yml), [playbooks/git.yml](/home/pablo/projects/wsl-ansible/playbooks/git.yml), [playbooks/neovim.yml](/home/pablo/projects/wsl-ansible/playbooks/neovim.yml), and [playbooks/node.yml](/home/pablo/projects/wsl-ansible/playbooks/node.yml).
+The top-level [playbook.yml](/home/pablo/bin/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/xdg.yml](/home/pablo/bin/wsl-ansible/playbooks/xdg.yml), [playbooks/base.yml](/home/pablo/bin/wsl-ansible/playbooks/base.yml), [playbooks/git.yml](/home/pablo/bin/wsl-ansible/playbooks/git.yml), [playbooks/zsh.yml](/home/pablo/bin/wsl-ansible/playbooks/zsh.yml), [playbooks/neovim.yml](/home/pablo/bin/wsl-ansible/playbooks/neovim.yml), and [playbooks/node.yml](/home/pablo/bin/wsl-ansible/playbooks/node.yml).
 
 ## What it does
 
 - Installs Ansible if needed
 - Uses `ansible-pull` to fetch and run the playbook on `localhost`
 - Installs a small set of base packages
+- Creates XDG directories and environment shims first so later playbooks can target clean paths
 - Creates a few development directories in your home directory
 - Configures Git identity and GitHub SSH from Doppler-provided secrets
+- Installs `zsh`, makes it the login shell, and keeps shell config under `~/.config/zsh`
 - Installs Neovim and the LazyVim starter config
-- Installs Node.js with `nvm`
+- Installs Node.js with `nvm` under XDG data
 
 ## Fresh WSL usage
 
@@ -60,7 +62,7 @@ ansible-pull \
   playbook.yml
 ```
 
-The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scripts/bootstrap.sh) now does the same thing for a local checkout.
+The helper script in [scripts/bootstrap.sh](/home/pablo/bin/wsl-ansible/scripts/bootstrap.sh) now does the same thing for a local checkout.
 
 ## Current package set
 
@@ -70,11 +72,12 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 - `unzip`
 - `openssh-client`
 - `stow`
-- `fish`
 - `build-essential`
 - `ripgrep`
 - `fd-find`
 - `luarocks`
+
+`zsh` is installed by the dedicated shell playbook rather than the generic base package list.
 
 ## Git
 
@@ -99,6 +102,28 @@ Expected Doppler secrets:
 
 If `~/.config/nvim` already exists, the playbook leaves it alone.
 
+## XDG first
+
+The repository now establishes XDG conventions before the rest of the bootstrap runs.
+
+- [playbooks/xdg.yml](/home/pablo/bin/wsl-ansible/playbooks/xdg.yml) creates the XDG directory tree
+- It installs the required `~/.zshenv` shim so `zsh` can discover `ZDOTDIR`
+- It prepares npm config and cache locations up front
+- Later playbooks reference shared XDG variables instead of hardcoding `~/.config`, `~/.cache`, or `~/.nvm`
+
+## Zsh and XDG
+
+- Installs `zsh` and sets `/usr/bin/zsh` as the login shell
+- Keeps the required `~/.zshenv` file minimal and uses it only to export XDG variables and `ZDOTDIR`
+- Stores the main shell config in `~/.config/zsh/.zshrc`
+- Uses `~/.config/zsh/.zprofile` to continue loading `~/.profile` on login shells
+- Stores zsh history in `~/.local/state/zsh/history`
+- Stores zsh completion cache in `~/.cache/zsh`
+- Stores `nvm` in `~/.local/share/nvm`
+- Stores npm config in `~/.config/npm/npmrc` and npm cache in `~/.cache/npm`
+
+This is about as XDG-compliant as `zsh` gets without hacks: `~/.zshenv` must still exist in `$HOME` so zsh can discover `ZDOTDIR`.
+
 ## Current directories
 
 - `~/dev`
@@ -106,6 +131,7 @@ If `~/.config/nvim` already exists, the playbook leaves it alone.
 - `~/.config`
 - `~/.local/bin`
 - `~/.local/share`
+- `~/.local/state`
 - `~/.cache`
 
 ## Node.js
@@ -113,12 +139,13 @@ If `~/.config/nvim` already exists, the playbook leaves it alone.
 - Installs `nvm` `v0.40.4`
 - Installs Node.js `24`
 - Sets Node.js `24` as the default `nvm` version
+- Uses `~/.local/share/nvm` instead of `~/.nvm`
 
 ## Next steps
 
 We can add features back one at a time:
 
 1. Dotfiles clone and stow
-2. Shell defaults
+2. Prompt/theme and shell plugins
 
 Each feature should stay optional and should only be added after the previous step is verified.

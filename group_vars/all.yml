@@ -1,3 +1,13 @@
 ---
-# Add custom variables here as the playbook grows.
-# The baseline bootstrap intentionally works without user-specific settings.
+# Shared paths for localhost bootstrap tasks.
+bootstrap_user: "{{ ansible_user_id }}"
+bootstrap_home: "{{ ansible_env.HOME }}"
+
+xdg_config_home: "{{ bootstrap_home }}/.config"
+xdg_cache_home: "{{ bootstrap_home }}/.cache"
+xdg_data_home: "{{ bootstrap_home }}/.local/share"
+xdg_state_home: "{{ bootstrap_home }}/.local/state"
+xdg_bin_home: "{{ bootstrap_home }}/.local/bin"
+
+zsh_config_dir: "{{ xdg_config_home }}/zsh"
+nvm_dir: "{{ xdg_data_home }}/nvm"

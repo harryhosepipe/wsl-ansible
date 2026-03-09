@@ -1,0 +1,52 @@
+---
+- name: XDG Bootstrap
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    xdg_directories:
+      - "{{ xdg_config_home }}"
+      - "{{ xdg_bin_home }}"
+      - "{{ xdg_data_home }}"
+      - "{{ xdg_state_home }}"
+      - "{{ xdg_config_home }}/npm"
+      - "{{ xdg_cache_home }}"
+      - "{{ xdg_cache_home }}/npm"
+      - "{{ xdg_cache_home }}/zsh"
+      - "{{ xdg_state_home }}/zsh"
+
+  tasks:
+    - name: Create XDG directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0755"
+      loop: "{{ xdg_directories }}"
+
+    - name: Install minimal home zshenv shim
+      ansible.builtin.copy:
+        dest: "{{ bootstrap_home }}/.zshenv"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0644"
+        content: |
+          export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+          export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/.cache}"
+          export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+          export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+          export ZDOTDIR="${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}"
+          export NVM_DIR="${NVM_DIR:-$XDG_DATA_HOME/nvm}"
+          export NPM_CONFIG_USERCONFIG="${NPM_CONFIG_USERCONFIG:-$XDG_CONFIG_HOME/npm/npmrc}"
+          export NPM_CONFIG_CACHE="${NPM_CONFIG_CACHE:-$XDG_CACHE_HOME/npm}"
+
+    - name: Create npm config file
+      ansible.builtin.copy:
+        dest: "{{ xdg_config_home }}/npm/npmrc"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0644"
+        content: |
+          cache=${XDG_CACHE_HOME}/npm

@@ -1,0 +1,61 @@
+---
+- name: Zsh And XDG Setup
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  tasks:
+    - name: Install zsh package
+      become: true
+      ansible.builtin.apt:
+        name: zsh
+        state: present
+
+    - name: Create zsh config directory
+      ansible.builtin.file:
+        path: "{{ zsh_config_dir }}"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0755"
+
+    - name: Install zshrc
+      ansible.builtin.copy:
+        dest: "{{ zsh_config_dir }}/.zshrc"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0644"
+        content: |
+          export HISTFILE="${XDG_STATE_HOME:-$HOME/.local/state}/zsh/history"
+          export HISTSIZE=50000
+          export SAVEHIST=50000
+
+          setopt APPEND_HISTORY
+          setopt HIST_IGNORE_DUPS
+          setopt HIST_IGNORE_SPACE
+          setopt SHARE_HISTORY
+          setopt AUTO_CD
+
+          autoload -Uz compinit
+          compinit -d "${XDG_CACHE_HOME:-$HOME/.cache}/zsh/zcompdump-${ZSH_VERSION}"
+
+          if [ -s "${NVM_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/nvm}/nvm.sh" ]; then
+            . "${NVM_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/nvm}/nvm.sh"
+          fi
+
+    - name: Install zprofile
+      ansible.builtin.copy:
+        dest: "{{ zsh_config_dir }}/.zprofile"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0644"
+        content: |
+          if [ -r "$HOME/.profile" ]; then
+            . "$HOME/.profile"
+          fi
+
+    - name: Set zsh as login shell
+      become: true
+      ansible.builtin.user:
+        name: "{{ bootstrap_user }}"
+        shell: /usr/bin/zsh

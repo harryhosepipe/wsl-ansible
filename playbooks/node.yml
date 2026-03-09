@@ -5,13 +5,13 @@
   gather_facts: true
 
   vars:
-    bootstrap_home: "{{ ansible_env.HOME }}"
-    nvm_dir: "{{ bootstrap_home }}/.nvm"
     node_major_version: "24"
 
   tasks:
     - name: Install nvm
       ansible.builtin.shell: |
+        export PROFILE=/dev/null
+        export NVM_DIR="{{ nvm_dir }}"
         curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
       args:
         executable: /bin/bash
