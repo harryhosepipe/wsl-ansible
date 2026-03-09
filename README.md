@@ -62,8 +62,9 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 
 ## Neovim
 
-- Installs the latest stable Neovim release from the official GitHub release artifacts
+- Installs the latest Neovim release from the official GitHub release artifacts
 - Extracts Neovim directly into `/usr/local`
+- Skips the Neovim install step when the latest release is already installed
 - Clones the LazyVim starter into `~/.config/nvim` if that directory does not already exist
 
 If `~/.config/nvim` already exists, the playbook leaves it alone.

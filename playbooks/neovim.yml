@@ -10,18 +10,41 @@
       x86_64: x86_64
       aarch64: arm64
     neovim_arch: "{{ neovim_arch_map[ansible_architecture] | default(ansible_architecture) }}"
-    neovim_archive_name: "nvim-linux-{{ neovim_arch }}.tar.gz"
-    neovim_download_url: "https://github.com/neovim/neovim/releases/latest/download/{{ neovim_archive_name }}"
-    neovim_archive_path: "/tmp/{{ neovim_archive_name }}"
     lazyvim_config_dir: "{{ bootstrap_home }}/.config/nvim"
 
   tasks:
+    - name: Get latest Neovim release metadata
+      ansible.builtin.uri:
+        url: https://api.github.com/repos/neovim/neovim/releases/latest
+        return_content: true
+      register: neovim_release
+
+    - name: Check for installed Neovim
+      ansible.builtin.command: /usr/local/bin/nvim --version
+      register: installed_nvim
+      failed_when: false
+      changed_when: false
+
+    - name: Set Neovim release facts
+      ansible.builtin.set_fact:
+        neovim_version: "{{ neovim_release.json.tag_name }}"
+        neovim_archive_name: "nvim-linux-{{ neovim_arch }}.tar.gz"
+        neovim_download_url: >-
+          {{
+            neovim_release.json.assets
+            | selectattr('name', 'equalto', neovim_archive_name)
+            | map(attribute='browser_download_url')
+            | first
+          }}
+        neovim_archive_path: "/tmp/{{ neovim_archive_name }}"
+
     - name: Download Neovim archive
       become: true
       ansible.builtin.get_url:
         url: "{{ neovim_download_url }}"
         dest: "{{ neovim_archive_path }}"
         mode: "0644"
+      when: installed_nvim.rc != 0 or (neovim_version not in installed_nvim.stdout)
 
     - name: Install Neovim
       become: true
@@ -31,6 +54,7 @@
         remote_src: true
         extra_opts:
           - --strip-components=1
+      when: installed_nvim.rc != 0 or (neovim_version not in installed_nvim.stdout)
 
     - name: Check for existing Neovim config
       ansible.builtin.stat:
