@@ -57,7 +57,6 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 
 - `~/dev`
 - `~/dev/projects`
-- `~/dev/sandbox`
 - `~/.config`
 - `~/.local/bin`
 - `~/.local/share`

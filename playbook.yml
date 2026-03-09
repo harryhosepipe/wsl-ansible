@@ -18,7 +18,6 @@
     base_directories:
       - "{{ bootstrap_home }}/dev"
       - "{{ bootstrap_home }}/dev/projects"
-      - "{{ bootstrap_home }}/dev/sandbox"
       - "{{ bootstrap_home }}/.config"
       - "{{ bootstrap_home }}/.local/bin"
       - "{{ bootstrap_home }}/.local/share"
