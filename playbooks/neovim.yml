@@ -1,0 +1,51 @@
+---
+- name: Neovim And LazyVim
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    bootstrap_home: "{{ ansible_env.HOME }}"
+    neovim_arch_map:
+      x86_64: x86_64
+      aarch64: arm64
+    neovim_arch: "{{ neovim_arch_map[ansible_architecture] | default(ansible_architecture) }}"
+    neovim_archive_name: "nvim-linux-{{ neovim_arch }}.tar.gz"
+    neovim_download_url: "https://github.com/neovim/neovim/releases/latest/download/{{ neovim_archive_name }}"
+    neovim_archive_path: "/tmp/{{ neovim_archive_name }}"
+    lazyvim_config_dir: "{{ bootstrap_home }}/.config/nvim"
+
+  tasks:
+    - name: Download Neovim archive
+      become: true
+      ansible.builtin.get_url:
+        url: "{{ neovim_download_url }}"
+        dest: "{{ neovim_archive_path }}"
+        mode: "0644"
+
+    - name: Install Neovim
+      become: true
+      ansible.builtin.unarchive:
+        src: "{{ neovim_archive_path }}"
+        dest: /usr/local
+        remote_src: true
+        extra_opts:
+          - --strip-components=1
+
+    - name: Check for existing Neovim config
+      ansible.builtin.stat:
+        path: "{{ lazyvim_config_dir }}"
+      register: nvim_config_dir
+
+    - name: Install LazyVim starter
+      ansible.builtin.git:
+        repo: https://github.com/LazyVim/starter
+        dest: "{{ lazyvim_config_dir }}"
+        depth: 1
+      when: not nvim_config_dir.stat.exists
+
+    - name: Remove LazyVim starter git metadata
+      ansible.builtin.file:
+        path: "{{ lazyvim_config_dir }}/.git"
+        state: absent
+      when: not nvim_config_dir.stat.exists

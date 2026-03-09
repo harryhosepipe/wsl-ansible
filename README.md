@@ -4,12 +4,15 @@ Small Ansible baseline for a fresh WSL Ubuntu install.
 
 The repository is intentionally minimal. It should succeed on a new WSL instance without requiring you to edit usernames, dotfiles URLs, or role variables first.
 
+The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/base.yml](/home/pablo/projects/wsl-ansible/playbooks/base.yml) and [playbooks/neovim.yml](/home/pablo/projects/wsl-ansible/playbooks/neovim.yml).
+
 ## What it does
 
 - Installs Ansible if needed
 - Uses `ansible-pull` to fetch and run the playbook on `localhost`
 - Installs a small set of base packages
 - Creates a few development directories in your home directory
+- Installs Neovim and the LazyVim starter config
 
 ## Fresh WSL usage
 
@@ -52,6 +55,17 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 - `stow`
 - `fish`
 - `build-essential`
+- `ripgrep`
+- `fd-find`
+- `luarocks`
+
+## Neovim
+
+- Installs the latest stable Neovim release from the official GitHub release artifacts
+- Extracts Neovim directly into `/usr/local`
+- Clones the LazyVim starter into `~/.config/nvim` if that directory does not already exist
+
+If `~/.config/nvim` already exists, the playbook leaves it alone.
 
 ## Current directories
 
@@ -67,8 +81,7 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 We can add features back one at a time:
 
 1. Dotfiles clone and stow
-2. Neovim install
-3. Node.js install
-4. Shell defaults
+2. Node.js install
+3. Shell defaults
 
 Each feature should stay optional and should only be added after the previous step is verified.
