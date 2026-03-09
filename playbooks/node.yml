@@ -10,6 +10,14 @@
     node_major_version: "24"
 
   tasks:
+    - name: Create nvm directory
+      ansible.builtin.file:
+        path: "{{ nvm_dir }}"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0755"
+
     - name: Install nvm
       ansible.builtin.shell: |
         export PROFILE=/dev/null
