@@ -1,4 +1,5 @@
 ---
 - import_playbook: playbooks/base.yml
+- import_playbook: playbooks/git.yml
 - import_playbook: playbooks/neovim.yml
 - import_playbook: playbooks/node.yml

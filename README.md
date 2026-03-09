@@ -4,7 +4,7 @@ Small Ansible baseline for a fresh WSL Ubuntu install.
 
 The repository is intentionally minimal. It should succeed on a new WSL instance without requiring you to edit usernames, dotfiles URLs, or role variables first.
 
-The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/base.yml](/home/pablo/projects/wsl-ansible/playbooks/base.yml), [playbooks/neovim.yml](/home/pablo/projects/wsl-ansible/playbooks/neovim.yml), and [playbooks/node.yml](/home/pablo/projects/wsl-ansible/playbooks/node.yml).
+The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/base.yml](/home/pablo/projects/wsl-ansible/playbooks/base.yml), [playbooks/git.yml](/home/pablo/projects/wsl-ansible/playbooks/git.yml), [playbooks/neovim.yml](/home/pablo/projects/wsl-ansible/playbooks/neovim.yml), and [playbooks/node.yml](/home/pablo/projects/wsl-ansible/playbooks/node.yml).
 
 ## What it does
 
@@ -12,15 +12,24 @@ The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stay
 - Uses `ansible-pull` to fetch and run the playbook on `localhost`
 - Installs a small set of base packages
 - Creates a few development directories in your home directory
+- Configures Git identity and GitHub SSH from Doppler-provided secrets
 - Installs Neovim and the LazyVim starter config
 - Installs Node.js with `nvm`
 
 ## Fresh WSL usage
 
-One-command install:
+One-command install after Doppler authentication:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p YOUR_PROJECT -c YOUR_CONFIG -- bash
+```
+
+Fresh WSL flow:
+
+```bash
+curl -Ls --tlsv1.2 --proto "=https" --retry 3 https://cli.doppler.com/install.sh | sudo sh
+doppler login
+curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | doppler run -p YOUR_PROJECT -c YOUR_CONFIG -- bash
 ```
 
 That installer will:
@@ -53,12 +62,27 @@ The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scr
 - `curl`
 - `wget`
 - `unzip`
+- `openssh-client`
 - `stow`
 - `fish`
 - `build-essential`
 - `ripgrep`
 - `fd-find`
 - `luarocks`
+
+## Git
+
+- Reads Git identity and GitHub SSH key material from environment variables injected by Doppler
+- Writes GitHub SSH keys to `~/.ssh/github_ed25519` and `~/.ssh/github_ed25519.pub`
+- Writes an SSH config entry for `github.com`
+- Configures global Git `user.name` and `user.email`
+
+Expected Doppler secrets:
+
+- `BOOTSTRAP_GIT_USER_NAME`
+- `BOOTSTRAP_GIT_USER_EMAIL`
+- `BOOTSTRAP_GITHUB_SSH_PRIVATE_KEY`
+- `BOOTSTRAP_GITHUB_SSH_PUBLIC_KEY`
 
 ## Neovim
 

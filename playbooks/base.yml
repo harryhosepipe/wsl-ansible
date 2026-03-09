@@ -12,6 +12,7 @@
       - curl
       - wget
       - unzip
+      - openssh-client
       - stow
       - fish
       - build-essential

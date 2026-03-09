@@ -1,0 +1,90 @@
+---
+- name: Git And GitHub SSH
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    bootstrap_user: "{{ ansible_user_id }}"
+    bootstrap_home: "{{ ansible_env.HOME }}"
+    ssh_dir: "{{ bootstrap_home }}/.ssh"
+    github_private_key_path: "{{ ssh_dir }}/github_ed25519"
+    github_public_key_path: "{{ ssh_dir }}/github_ed25519.pub"
+    git_user_name: "{{ lookup('ansible.builtin.env', 'BOOTSTRAP_GIT_USER_NAME') }}"
+    git_user_email: "{{ lookup('ansible.builtin.env', 'BOOTSTRAP_GIT_USER_EMAIL') }}"
+    github_ssh_private_key: "{{ lookup('ansible.builtin.env', 'BOOTSTRAP_GITHUB_SSH_PRIVATE_KEY') }}"
+    github_ssh_public_key: "{{ lookup('ansible.builtin.env', 'BOOTSTRAP_GITHUB_SSH_PUBLIC_KEY') }}"
+
+  tasks:
+    - name: Validate required Git bootstrap variables
+      ansible.builtin.assert:
+        that:
+          - git_user_name | length > 0
+          - git_user_email | length > 0
+          - github_ssh_private_key | length > 0
+          - github_ssh_public_key | length > 0
+        fail_msg: >-
+          Missing required bootstrap variables. Run bootstrap under doppler run
+          and provide BOOTSTRAP_GIT_USER_NAME, BOOTSTRAP_GIT_USER_EMAIL,
+          BOOTSTRAP_GITHUB_SSH_PRIVATE_KEY, and BOOTSTRAP_GITHUB_SSH_PUBLIC_KEY.
+
+    - name: Create SSH directory
+      ansible.builtin.file:
+        path: "{{ ssh_dir }}"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0700"
+
+    - name: Install GitHub SSH private key
+      ansible.builtin.copy:
+        content: "{{ github_ssh_private_key }}"
+        dest: "{{ github_private_key_path }}"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0600"
+      no_log: true
+
+    - name: Install GitHub SSH public key
+      ansible.builtin.copy:
+        content: "{{ github_ssh_public_key }}"
+        dest: "{{ github_public_key_path }}"
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0644"
+      no_log: true
+
+    - name: Configure SSH for GitHub
+      ansible.builtin.blockinfile:
+        path: "{{ ssh_dir }}/config"
+        create: true
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0600"
+        marker: "# {mark} ANSIBLE MANAGED GITHUB"
+        block: |
+          Host github.com
+            HostName github.com
+            User git
+            IdentityFile {{ github_private_key_path }}
+            IdentitiesOnly yes
+
+    - name: Add GitHub host key
+      ansible.builtin.known_hosts:
+        path: "{{ ssh_dir }}/known_hosts"
+        name: github.com
+        key: "{{ lookup('ansible.builtin.pipe', 'ssh-keyscan -H github.com 2>/dev/null') }}"
+
+    - name: Configure Git user name
+      ansible.builtin.git_config:
+        name: user.name
+        value: "{{ git_user_name }}"
+        scope: global
+      no_log: true
+
+    - name: Configure Git user email
+      ansible.builtin.git_config:
+        name: user.email
+        value: "{{ git_user_email }}"
+        scope: global
+      no_log: true
