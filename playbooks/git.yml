@@ -38,7 +38,7 @@
 
     - name: Install GitHub SSH private key
       ansible.builtin.copy:
-        content: "{{ github_ssh_private_key }}"
+        content: "{{ github_ssh_private_key ~ '\n' }}"
         dest: "{{ github_private_key_path }}"
         owner: "{{ bootstrap_user }}"
         group: "{{ bootstrap_user }}"
@@ -47,7 +47,7 @@
 
     - name: Install GitHub SSH public key
       ansible.builtin.copy:
-        content: "{{ github_ssh_public_key }}"
+        content: "{{ github_ssh_public_key ~ '\n' }}"
         dest: "{{ github_public_key_path }}"
         owner: "{{ bootstrap_user }}"
         group: "{{ bootstrap_user }}"
