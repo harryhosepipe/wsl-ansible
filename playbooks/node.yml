@@ -1,0 +1,27 @@
+---
+- name: Node.js With Nvm
+  hosts: localhost
+  connection: local
+  gather_facts: true
+
+  vars:
+    bootstrap_home: "{{ ansible_env.HOME }}"
+    nvm_dir: "{{ bootstrap_home }}/.nvm"
+    node_major_version: "24"
+
+  tasks:
+    - name: Install nvm
+      ansible.builtin.shell: |
+        curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.4/install.sh | bash
+      args:
+        executable: /bin/bash
+        creates: "{{ nvm_dir }}/nvm.sh"
+
+    - name: Install Node.js
+      ansible.builtin.shell: |
+        export NVM_DIR="{{ nvm_dir }}"
+        . "${NVM_DIR}/nvm.sh"
+        nvm install {{ node_major_version }}
+        nvm alias default {{ node_major_version }}
+      args:
+        executable: /bin/bash

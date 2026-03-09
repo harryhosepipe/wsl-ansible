@@ -4,7 +4,7 @@ Small Ansible baseline for a fresh WSL Ubuntu install.
 
 The repository is intentionally minimal. It should succeed on a new WSL instance without requiring you to edit usernames, dotfiles URLs, or role variables first.
 
-The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/base.yml](/home/pablo/projects/wsl-ansible/playbooks/base.yml) and [playbooks/neovim.yml](/home/pablo/projects/wsl-ansible/playbooks/neovim.yml).
+The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stays thin and imports smaller playbooks from [playbooks/base.yml](/home/pablo/projects/wsl-ansible/playbooks/base.yml), [playbooks/neovim.yml](/home/pablo/projects/wsl-ansible/playbooks/neovim.yml), and [playbooks/node.yml](/home/pablo/projects/wsl-ansible/playbooks/node.yml).
 
 ## What it does
 
@@ -13,6 +13,7 @@ The top-level [playbook.yml](/home/pablo/projects/wsl-ansible/playbook.yml) stay
 - Installs a small set of base packages
 - Creates a few development directories in your home directory
 - Installs Neovim and the LazyVim starter config
+- Installs Node.js with `nvm`
 
 ## Fresh WSL usage
 
@@ -76,12 +77,17 @@ If `~/.config/nvim` already exists, the playbook leaves it alone.
 - `~/.local/share`
 - `~/.cache`
 
+## Node.js
+
+- Installs `nvm` `v0.40.4`
+- Installs Node.js `24`
+- Sets Node.js `24` as the default `nvm` version
+
 ## Next steps
 
 We can add features back one at a time:
 
 1. Dotfiles clone and stow
-2. Node.js install
-3. Shell defaults
+2. Shell defaults
 
 Each feature should stay optional and should only be added after the previous step is verified.
