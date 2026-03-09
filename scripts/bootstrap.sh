@@ -19,6 +19,7 @@ ansible-pull \
   --url "${REPO_ROOT}" \
   --directory "${HOME}/.local/share/ansible-pull/wsl-ansible" \
   --inventory localhost, \
+  --limit localhost \
   --clean \
   --ask-become-pass \
   playbook.yml

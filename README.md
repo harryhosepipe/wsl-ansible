@@ -34,6 +34,7 @@ ansible-pull \
   --url https://github.com/harryhosepipe/wsl-ansible.git \
   --directory ~/.local/share/ansible-pull/wsl-ansible \
   --inventory localhost, \
+  --limit localhost \
   --checkout main \
   --clean \
   --ask-become-pass \

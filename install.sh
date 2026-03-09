@@ -21,6 +21,7 @@ ansible-pull \
   --url "${REPO_HTTPS_URL}" \
   --directory "${PULL_DIR}" \
   --inventory localhost, \
+  --limit localhost \
   --checkout main \
   --clean \
   --ask-become-pass \
