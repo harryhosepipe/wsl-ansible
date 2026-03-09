@@ -6,24 +6,41 @@ The repository is intentionally minimal. It should succeed on a new WSL instance
 
 ## What it does
 
-- Installs Ansible with a bootstrap shell script
-- Runs a local playbook against `localhost`
+- Installs Ansible if needed
+- Uses `ansible-pull` to fetch and run the playbook on `localhost`
 - Installs a small set of base packages
 - Creates a few development directories in your home directory
 
 ## Fresh WSL usage
 
-Clone the repository and run:
+One-command install:
 
 ```bash
-./scripts/bootstrap.sh
+curl -fsSL https://raw.githubusercontent.com/harryhosepipe/wsl-ansible/main/install.sh | bash
 ```
 
-That script installs Ansible, then runs:
+That installer will:
+
+- install `git` and Ansible if needed
+- pull this repository into `~/.local/share/ansible-pull/wsl-ansible`
+- run `playbook.yml` locally with `ansible-pull`
+
+Manual install:
 
 ```bash
-ansible-playbook -i inventory/hosts.yml playbook.yml --ask-become-pass
+sudo apt update
+sudo apt install -y git ansible
+ansible-pull \
+  --url https://github.com/harryhosepipe/wsl-ansible.git \
+  --directory ~/.local/share/ansible-pull/wsl-ansible \
+  --inventory localhost, \
+  --checkout main \
+  --clean \
+  --ask-become-pass \
+  playbook.yml
 ```
+
+The helper script in [scripts/bootstrap.sh](/home/pablo/projects/wsl-ansible/scripts/bootstrap.sh) now does the same thing for a local checkout.
 
 ## Current package set
 
