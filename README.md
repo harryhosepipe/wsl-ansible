@@ -1,73 +1,57 @@
-# WSL Ubuntu Development Environment Setup
+# WSL Ansible Bootstrap
 
-Ansible playbook to set up a clean WSL Ubuntu environment for web development, following the specifications in CLAUDE.md.
+Small Ansible baseline for a fresh WSL Ubuntu install.
 
-## Quick Start
+The repository is intentionally minimal. It should succeed on a new WSL instance without requiring you to edit usernames, dotfiles URLs, or role variables first.
 
-1. Install Ansible:
+## What it does
+
+- Installs Ansible with a bootstrap shell script
+- Runs a local playbook against `localhost`
+- Installs a small set of base packages
+- Creates a few development directories in your home directory
+
+## Fresh WSL usage
+
+Clone the repository and run:
+
 ```bash
-sudo apt update && sudo apt install ansible
+./scripts/bootstrap.sh
 ```
 
-2. Clone this repository:
-```bash
-git clone <your-repo-url> ~/dev/wsl-ansible
-cd ~/dev/wsl-ansible
-```
+That script installs Ansible, then runs:
 
-3. Update variables in `group_vars/all.yml`:
-   - Set your `dotfiles_repo` URL
-   - Adjust user settings if needed
-
-4. Run the playbook:
 ```bash
 ansible-playbook -i inventory/hosts.yml playbook.yml --ask-become-pass
 ```
 
-## What This Playbook Does
+## Current package set
 
-### Base Setup
-- Updates system packages
-- Installs essential development tools (git, stow, build-essential, etc.)
-- Creates XDG-compliant directory structure
-- Installs Fish shell
+- `git`
+- `curl`
+- `wget`
+- `unzip`
+- `stow`
+- `fish`
+- `build-essential`
 
-### Development Environment
-- **Neovim**: Downloads latest stable release from GitHub (AppImage method)
-- **Node.js**: Installs fnm and latest LTS Node.js version
-- **Shell**: Sets Fish as default shell
+## Current directories
 
-### Dotfiles Management
-- Clones your dotfiles repository
-- Uses Stow to symlink configurations
-- Sets up XDG-compliant git configuration
-- Installs Fisher plugin manager for Fish
+- `~/dev`
+- `~/dev/projects`
+- `~/dev/sandbox`
+- `~/.config`
+- `~/.local/bin`
+- `~/.local/share`
+- `~/.cache`
 
-## Directory Structure Created
+## Next steps
 
-```
-~/
-├── .config/           # Centralized configurations
-├── .local/            # User-specific data
-├── .cache/            # Application cache
-├── dev/
-│   ├── dotfiles/      # Your stowed configurations
-│   ├── projects/      # Development projects
-│   └── sandbox/       # Experimental code
-├── Documents/
-└── Downloads/
-```
+We can add features back one at a time:
 
-## Customization
+1. Dotfiles clone and stow
+2. Neovim install
+3. Node.js install
+4. Shell defaults
 
-Edit `group_vars/all.yml` to:
-- Change dotfiles repository URL
-- Modify stow packages list
-- Adjust directory structure
-- Add/remove development tools
-
-## Requirements
-
-- Fresh WSL Ubuntu installation
-- Internet connection
-- Your dotfiles repository accessible via git
+Each feature should stay optional and should only be added after the previous step is verified.

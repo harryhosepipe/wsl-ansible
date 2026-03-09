@@ -1,11 +1,46 @@
 ---
-- name: WSL Ubuntu Development Environment Setup
+- name: WSL Bootstrap Baseline
   hosts: localhost
-  become: yes
+  connection: local
+  become: true
+  gather_facts: true
+
   vars:
-    ansible_become_password: "{{ ansible_password | default(omit) }}"
-  
-  roles:
-    - base
-    - development
-    - dotfiles
+    bootstrap_user: "{{ ansible_user_id }}"
+    bootstrap_home: "{{ ansible_env.HOME }}"
+    base_packages:
+      - git
+      - curl
+      - wget
+      - unzip
+      - stow
+      - fish
+      - build-essential
+    base_directories:
+      - "{{ bootstrap_home }}/dev"
+      - "{{ bootstrap_home }}/dev/projects"
+      - "{{ bootstrap_home }}/dev/sandbox"
+      - "{{ bootstrap_home }}/.config"
+      - "{{ bootstrap_home }}/.local/bin"
+      - "{{ bootstrap_home }}/.local/share"
+      - "{{ bootstrap_home }}/.cache"
+
+  tasks:
+    - name: Refresh apt cache
+      ansible.builtin.apt:
+        update_cache: true
+        cache_valid_time: 3600
+
+    - name: Install base packages
+      ansible.builtin.apt:
+        name: "{{ base_packages }}"
+        state: present
+
+    - name: Create base directories
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        owner: "{{ bootstrap_user }}"
+        group: "{{ bootstrap_user }}"
+        mode: "0755"
+      loop: "{{ base_directories }}"
