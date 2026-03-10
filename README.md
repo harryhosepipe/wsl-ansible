@@ -120,6 +120,7 @@ The repository now establishes XDG conventions before the rest of the bootstrap 
 - Uses `~/.config/zsh/.zprofile` to continue loading `~/.profile` on login shells
 - Uses `~/.config/zsh/.zprofile` to restore or start `ssh-agent` and add `~/.ssh/github_ed25519`
 - Stores zsh history in `~/.local/state/zsh/history`
+- Uses extended history format with file locking to reduce history corruption risk
 - Stores zsh completion cache in `~/.cache/zsh`
 - Stores `nvm` in `~/.local/share/nvm`
 - Stores npm config in `~/.config/npm/npmrc` and npm cache in `~/.cache/npm`
